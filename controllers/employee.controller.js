@@ -67,6 +67,16 @@ export class EmployeeController {
         return res.status(400).json({error: 'Ingrese '})
       }
 
+      const [result] = await conn.query('UPDATE employee SET employee_name = IFNULL(?, employee_name), salary = IFNULL(?, salary) WHERE employee_id = ?', [name, salary, id])
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({error: 'Empleado no encomtrado'})
+      }
+
+      const [rows] = await conn.query('SELECT * FROM employee WHERE employee_id = ?', [id])
+
+      res.status(200).json({message: 'Empleado actualizado', rows})
+
 
     } catch (error) {
       console.log('Error in function updateEmployee', error)
